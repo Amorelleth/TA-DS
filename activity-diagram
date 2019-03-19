@@ -1,0 +1,61 @@
+@startuml
+
+scale 1200 width
+
+start
+
+if (FirstRunning?) then (true) 
+    :InstallSystem;
+endif
+
+while (Turn off device?)
+
+fork
+    repeat
+        :Counting steps;
+        :SaveData;
+    repeat while (Battery Low?)
+    (A)
+    detach
+
+    fork again
+        if (Is connected?) then (true)
+        :Look for bluetooth devices;
+        if (Arre bluetooth devices found?) then (true)
+            :Authentication;
+            if (Is authentication ok?) then (true)
+                :Get Statistics;
+                :Send data to app;
+            endif
+        endif
+    else 
+        :Get Statistics;
+        :Send data to app;
+    endif
+
+    fork again
+        while (Waiting for user request)
+            :Process request;
+            if (Need measurements?) then (true)
+                :Access sensors;
+                :Save data;
+            endif
+            if (Need Calculations?) then (true)
+                :Access memory;
+                :Make Calculations;
+            endif
+            :Get data;
+            :Display data on the buckle;
+            if (Is connected?) then (true)
+                :Send data to app;
+            endif
+        endwhile
+end fork
+endwhile
+
+(A)
+:SaveData;
+:CompleteProcesses;
+stop
+
+@enduml

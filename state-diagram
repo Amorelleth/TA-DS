@@ -1,0 +1,64 @@
+@startuml
+
+top to bottom direction
+hide empty description
+scale 1200 width
+
+state SaveData
+state Pending {
+    state f <<fork>>
+    [*] -> f
+    f --> CheckBattery
+    f --> CheckConnection
+    f --> CountSteps
+
+    CheckBattery --> SaveData : Low Battery
+    CheckBattery --> CheckBattery
+    CountSteps --> CountSteps
+    CheckConnection --> CollectStatistics : True
+    CheckConnection --> Connection : False
+    CheckConnection --> CheckConnection
+}
+state GetData {
+    [*] --> AccessMemory
+    AccessMemory --> AccumulateData
+    AccumulateData --> AccumulateData : New Data
+    AccumulateData --> ProcessData : Enough Data
+}
+state ShowInfoOnTheBuckle {
+    [*] --> AccessScreen
+    AccessScreen --> DisplayData
+}
+state CollectStatistics {
+    [*] --> CheckTokens
+    CheckTokens -left-> AccessLogs : Succeeded
+}
+state Connection {
+    [*] --> LookForBluetoothDevices
+    LookForBluetoothDevices --> Authorization : Succeeded
+    LookForBluetoothDevices --> LookForBluetoothDevices : Failed
+    Authorization -right--> CollectStatistics : Succeeded
+    Authorization -right--> Pending : Failed
+}
+state MakeMeasurments {
+    [*] --> AccessSensors
+    AccessSensors --> AccessSensors : New Data
+    AccessSensors --> MakeCalculations : EnoughData
+}
+MakeMeasurments --> SaveData
+SaveData --> SaveData : Failed
+SaveData --> Pending
+Pending --> MakeMeasurments
+Pending --> GetData
+GetData --> ShowInfoOnTheBuckle
+ShowInfoOnTheBuckle --> Pending
+CollectStatistics --> GetData
+GetData --> SendDataToApp
+SendDataToApp --> Pending
+SaveData --> CompletePropcesses
+
+[*] --> Pending : Turn on
+
+CompletePropcesses --> [*] : Turn off
+
+@enduml

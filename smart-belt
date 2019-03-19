@@ -1,0 +1,56 @@
+@startuml
+left to right direction
+
+:Пользователь: as User
+:Официальное\nприложение: as App
+:Другие\nприложения: as Apps
+
+Apps <|-- App
+
+rectangle "Умный ремень"  {
+    (Посмотреть количество\n пройденных шагов) as (ShowSteps)
+    (Измерить скорость\n ходьбы) as (ShowSpeed)
+    (Посмотреть время,\nпроведенное в сидячем положении) as (ShowSeat)
+    (Измерить окружность талии) as (MeasureWaist)
+    (Проверить, нет ли переедания) as (CheckOvereating)
+    (Определить размер брюк) as (MeasureSize)
+    (Подключить к смартфону) as (ConnectToPhone)
+    (Настроить пряжку) as (SetBuckle)
+    (Настроить уведомления) as (SetPush)
+    (Включить Bluetooth) as (Bluetooth)
+
+    (Отправить уведомление) as (SendPush)
+    (Отправить статистику\nпроизводителю) as (SendStat)
+    (Проверить зарядку) as (CheckCharge)
+
+    (CheckCharge) .> (SendPush) : Разряжен
+    (ConnectToPhone) .> (Bluetooth)
+    (MeasureSize) .> (MeasureWaist)
+    (CheckOvereating) .> (MeasureWaist)
+    (MeasureWaist) .> (SendPush) : Поправился\n
+    (CheckOvereating) .> (SendPush) : Переел\n
+    (ShowSeat) .> (SendPush) : Дольше 3-х часов\n
+}
+
+User ---> (CheckCharge)
+User ---> (SetBuckle)
+User ---> (SetPush)
+User ---> (ShowSpeed)
+User ---> (MeasureSize)
+User ---> (ShowSteps)
+User ---> (ShowSeat)
+User ---> (MeasureWaist)
+User ---> (CheckOvereating)
+User ---> (ConnectToPhone)
+
+(SendStat) <-- App
+(CheckCharge) <-- App
+(SendPush) <-- App
+
+(MeasureSize) <-- Apps
+(MeasureWaist) <-- Apps
+(CheckOvereating) <-- Apps
+(ShowSpeed) <-- Apps
+(ShowSteps) <-- Apps
+(ShowSeat) <-- Apps
+@enduml
