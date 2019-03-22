@@ -1,0 +1,40 @@
+@startuml
+top to bottom direction
+
+rectangle App <<Mobile App>> {
+    component Processor
+    component SmartphoneBluetooth
+}
+
+rectangle SmartBelt <<Device>>  {
+    database InternalMemory
+
+    node TaskTrackerWorker {
+        rectangle Task
+        queue IncomingTasks
+        component TasksResolver
+        component Calculator
+        Task -> IncomingTasks: queue.push();
+        IncomingTasks -down-> TasksResolver: resolveUseCase();
+        TasksResolver -> Calculator: resolveTask();
+    }
+
+    component Screen
+    component Sensors
+    TaskTrackerWorker --> Screen: DisplayResult();
+    TaskTrackerWorker --> Sensors: GetData();
+
+    node StepsCounterWorker {
+        component OrientationInSpaceService
+        component DistanceHandler
+        OrientationInSpaceService -> DistanceHandler: DistanceToSteps();
+    }
+
+    component BeltBluetooth
+
+    TaskTrackerWorker --> InternalMemory: WriteData
+    StepsCounterWorker --> InternalMemory: WriteData
+    BeltBluetooth --> SmartphoneBluetooth: Connect
+}
+
+@enduml

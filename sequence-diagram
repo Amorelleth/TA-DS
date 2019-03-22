@@ -1,0 +1,46 @@
+@startuml
+
+actor User
+boundary BuckleScreen
+control MeasuresController
+entity ClassMeasure
+entity ClassCalculator
+database InternalMemory
+
+User -> BuckleScreen: ShowMeMyPantsSize
+
+activate BuckleScreen
+BuckleScreen -> MeasuresController: << createRequest >> AccessSensors();
+deactivate BuckleScreen
+
+activate MeasuresController
+MeasuresController -> ClassMeasure: << createRequest >> MakeMeasures();
+deactivate MeasuresController
+
+activate ClassMeasure
+ClassMeasure --> MeasuresController: MeasuresMade;
+destroy ClassMeasure
+
+activate MeasuresController
+MeasuresController -> ClassCalculator: << createRequest >> MakeCalculationsOfSize();
+deactivate MeasuresController
+activate ClassCalculator
+
+ClassCalculator --> MeasuresController: CalculationsMade();
+destroy ClassCalculator
+
+activate MeasuresController
+MeasuresController --> InternalMemory: << createRequest >> WriteData();
+activate InternalMemory
+InternalMemory --> MeasuresController: DataWritten;
+deactivate InternalMemory
+
+activate BuckleScreen
+MeasuresController -> BuckleScreen: ShowSize();
+BuckleScreen --> MeasuresController: SizeShown
+deactivate MeasuresController
+
+BuckleScreen -> User: HereIsYourSize
+deactivate BuckleScreen
+
+@enduml
